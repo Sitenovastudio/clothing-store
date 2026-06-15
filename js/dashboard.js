@@ -119,11 +119,11 @@ await supabaseClient
 .select("total_amount");
 
 const totalRevenue =
-salesData?.reduce(
-(sum, sale) =>
+(salesData || []).reduce(
+(sum,sale)=>
 sum + Number(sale.total_amount || 0),
 0
-) || 0;
+); 
 
 const { count: lowStockCount } =
 await supabaseClient
