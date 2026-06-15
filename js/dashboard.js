@@ -3,18 +3,18 @@
 ========================== */
 
 const menuBtn =
-    document.getElementById("menuBtn");
+document.getElementById("menuBtn");
 
 const sidebar =
-    document.getElementById("sidebar");
+document.getElementById("sidebar");
 
-if (menuBtn) {
+if(menuBtn && sidebar){
 
-    menuBtn.addEventListener("click", () => {
+menuBtn.addEventListener("click", () => {
 
-        sidebar.classList.toggle("show");
+sidebar.classList.toggle("show");
 
-    });
+});
 
 }
 
@@ -22,95 +22,90 @@ if (menuBtn) {
    DARK MODE
 ========================== */
 
-function toggleDarkMode() {
+function toggleDarkMode(){
 
-    document.body.classList.toggle("dark");
+document.body.classList.toggle("dark");
 
-    const darkModeEnabled =
-        document.body.classList.contains("dark");
+const darkModeEnabled =
+document.body.classList.contains("dark");
 
-    localStorage.setItem(
-        "darkMode",
-        darkModeEnabled
-    );
+localStorage.setItem(
+"darkMode",
+darkModeEnabled
+);
 
-    updateModeStatus();
-
-}
-
-/* Load Saved Mode */
-
-window.addEventListener("load", () => {
-
-    const darkMode =
-        localStorage.getItem("darkMode");
-
-    if (darkMode === "true") {
-
-        document.body.classList.add("dark");
-
-    }
-
-    updateModeStatus();
-
-});
-
-/* Update Status */
-
-function updateModeStatus() {
-
-    const status =
-        document.getElementById("modeStatus");
-
-    if (!status) return;
-
-    if (
-        document.body.classList.contains("dark")
-    ) {
-
-        status.innerText = "On";
-
-        status.style.color = "#16a34a";
-
-    } else {
-
-        status.innerText = "Off";
-
-        status.style.color = "#dc2626";
-
-    }
+updateModeStatus();
 
 }
 
 /* ==========================
-   DASHBOARD DATA
+   LOAD SAVED MODE
 ========================== */
 
-/*
-Temporary demo values
+window.addEventListener("load", () => {
 
-Later:
-Replace with Supabase API
-*/
+const darkMode =
+localStorage.getItem("darkMode");
 
-async function loadDashboardStats() {
+if(darkMode === "true"){
 
-try {
+document.body.classList.add("dark");
+
+}
+
+updateModeStatus();
+
+});
+
+/* ==========================
+   UPDATE MODE STATUS
+========================== */
+
+function updateModeStatus(){
+
+const status =
+document.getElementById("modeStatus");
+
+if(!status) return;
+
+if(
+document.body.classList.contains("dark")
+){
+
+status.innerText = "On";
+status.style.color = "#16a34a";
+
+}else{
+
+status.innerText = "Off";
+status.style.color = "#dc2626";
+
+}
+
+}
+
+/* ==========================
+   DASHBOARD STATS
+========================== */
+
+async function loadDashboardStats(){
+
+try{
 
 const { count: productCount } =
 await supabaseClient
 .from("products")
-.select("*", {
-count: "exact",
-head: true
+.select("*",{
+count:"exact",
+head:true
 });
 
 const { count: salesCount } =
 await supabaseClient
 .from("sales")
-.select("*", {
-count: "exact",
-head: true
+.select("*",{
+count:"exact",
+head:true
 });
 
 const { data: salesData } =
@@ -123,16 +118,16 @@ const totalRevenue =
 (sum,sale)=>
 sum + Number(sale.total_amount || 0),
 0
-); 
+);
 
 const { count: lowStockCount } =
 await supabaseClient
 .from("products")
-.select("*", {
-count: "exact",
-head: true
+.select("*",{
+count:"exact",
+head:true
 })
-.lt("stock", 5);
+.lt("stock",5);
 
 const totalProductsEl =
 document.getElementById("totalProducts");
@@ -162,23 +157,37 @@ if(lowStockEl)
 lowStockEl.innerText =
 lowStockCount || 0;
 
+}catch(error){
+
+console.error(
+"Dashboard Error:",
+error
+);
+
 }
 
-loadDashboardStats();
+}
 
+/* Run only on dashboard page */
+
+if(
+document.getElementById("totalProducts")
+){
+loadDashboardStats();
+}
 
 /* ==========================
    GREETING
 ========================== */
 
 const username =
-    localStorage.getItem("username");
+localStorage.getItem("username");
 
-if (username) {
+if(username){
 
-    console.log(
-        "Welcome " + username
-    );
+console.log(
+"Welcome " + username
+);
 
 }
 
@@ -186,23 +195,26 @@ if (username) {
    AUTO CLOSE SIDEBAR
 ========================== */
 
-document.addEventListener("click", function (e) {
+document.addEventListener(
+"click",
+function(e){
 
-    if (
-        window.innerWidth < 768 &&
-        sidebar &&
-        sidebar.classList.contains("show")
-    ) {
+if(
+window.innerWidth < 768 &&
+sidebar &&
+sidebar.classList.contains("show")
+){
 
-        if (
-            !sidebar.contains(e.target) &&
-            e.target !== menuBtn
-        ) {
+if(
+!sidebar.contains(e.target) &&
+e.target !== menuBtn
+){
 
-            sidebar.classList.remove("show");
+sidebar.classList.remove("show");
 
-        }
+}
 
-    }
+}
 
-});
+}
+);
