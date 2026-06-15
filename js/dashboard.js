@@ -134,32 +134,33 @@ head: true
 })
 .lt("stock", 5);
 
-document.getElementById(
-"totalProducts"
-).innerText =
+const totalProductsEl =
+document.getElementById("totalProducts");
+
+const totalSalesEl =
+document.getElementById("totalSales");
+
+const totalRevenueEl =
+document.getElementById("totalRevenue");
+
+const lowStockEl =
+document.getElementById("lowStock");
+
+if(totalProductsEl)
+totalProductsEl.innerText =
 productCount || 0;
 
-document.getElementById(
-"totalSales"
-).innerText =
+if(totalSalesEl)
+totalSalesEl.innerText =
 salesCount || 0;
 
-document.getElementById(
-"totalRevenue"
-).innerText =
+if(totalRevenueEl)
+totalRevenueEl.innerText =
 "₹" + totalRevenue;
 
-document.getElementById(
-"lowStock"
-).innerText =
+if(lowStockEl)
+lowStockEl.innerText =
 lowStockCount || 0;
-
-}
-catch(error){
-
-console.error(error);
-
-}
 
 }
 
