@@ -141,15 +141,15 @@ await uploadImage(imageFile);
 
 }
 
-const product={
+const product = {
 
-name:name.value,
-category:category.value,
-size:size.value,
-color:color.value,
-price:price.value,
-stock:stock.value,
-image_url:imageUrl
+name: document.getElementById("name").value,
+category: document.getElementById("category").value,
+size: document.getElementById("size").value,
+color: document.getElementById("color").value,
+price: document.getElementById("price").value,
+stock: document.getElementById("stock").value,
+image_url: imageUrl
 
 };
 
