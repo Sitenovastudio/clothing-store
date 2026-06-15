@@ -70,7 +70,7 @@ document.getElementById(
 
 const product =
 products.find(
-p=>p.id===productId
+p => Number(p.id) === Number(productId)
 );
 
 if(!product){
