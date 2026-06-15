@@ -1,91 +1,40 @@
-/* ==========================
-   LOGIN SYSTEM
-========================== */
-if(error){
-   console.error(error);
-}
+const loginForm =
+document.getElementById("loginForm");
 
+if(loginForm){
 
-const loginForm = document.getElementById("loginForm");
+loginForm.addEventListener(
+"submit",
+function(e){
 
-if (loginForm) {
+e.preventDefault();
 
-    loginForm.addEventListener("submit", function (e) {
+const username =
+document.getElementById("username").value;
 
-        e.preventDefault();
+const password =
+document.getElementById("password").value;
 
-        const username =
-            document.getElementById("username").value.trim();
+if(
+username === "admin" &&
+password === "admin123"
+){
 
-        const password =
-            document.getElementById("password").value.trim();
+localStorage.setItem(
+"loggedIn",
+"true"
+);
 
-        /* Demo Login */
+window.location.href =
+"./dashboard.html";
 
-        if (
-    username === "admin" &&
-    password === "admin123"
-) {
-    localStorage.setItem("loggedIn", "true");
-    window.location.href = "./dashboard.html";
-}
+}else{
 
-        } else {
-
-            alert("Invalid Username or Password");
-
-        }
-
-    });
+alert(
+"Invalid Username or Password"
+);
 
 }
 
-/* ==========================
-   SESSION PROTECTION
-========================== */
-
-function checkAuth() {
-
-    const loggedIn =
-        localStorage.getItem("loggedIn");
-
-    if (
-        loggedIn !== "true" &&
-        !window.location.pathname.includes("index.html")
-    ) {
-
-        window.location.href = "./dashboard.html";
-
-    }
-
-}
-
-/* Run Protection */
-
-if (
-    window.location.pathname.includes("dashboard.html")
-) {
-
-    checkAuth();
-
-}
-
-/* ==========================
-   LOGOUT
-========================== */
-
-function logout() {
-
-    const confirmLogout =
-        confirm("Are you sure you want to logout?");
-
-    if (confirmLogout) {
-
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("username");
-
-        window.location.href = "index.html";
-
-    }
-
+});
 }
