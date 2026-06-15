@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Sales Billing</title>
+
+<link rel="stylesheet"
+href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<h1>Customer Billing</h1>
+
+<div class="panel">
+
+<h3>Customer Details</h3>
+
+<input
+type="text"
+id="customerName"
+placeholder="Customer Name">
+
+<input
+type="text"
+id="customerPhone"
+placeholder="Phone Number">
+
+<input
+type="text"
+id="customerAddress"
+placeholder="Address">
+
+</div>
+
+<br>
+
+<div class="panel">
+
+<h3>Add Product</h3>
+
+<select id="productSelect">
+
+<option value="">
+Select Product
+</option>
+
+</select>
+
+<input
+type="number"
+id="qty"
+placeholder="Quantity"
+value="1">
+
+<button
+onclick="addToCart()"
+class="btn btn-primary">
+
+Add To Cart
+
+</button>
+
+</div>
+
+<br>
+
+<div class="panel">
+
+<h3>Cart</h3>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+
+</tr>
+
+</thead>
+
+<tbody id="cartBody">
+
+</tbody>
+
+</table>
+
+<h2 id="grandTotal">
+
+₹0
+
+</h2>
+
+<button
+onclick="completeSale()"
+class="btn btn-success">
+
+Generate Invoice
+
+</button>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/sales.js"></script>
+
+</body>
+
+</html>
