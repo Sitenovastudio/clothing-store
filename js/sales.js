@@ -1,4 +1,180 @@
+/* ==========================
+   GLOBAL VARIABLES
+========================== */
+
+let products = [];
+let cart = [];
+let grandTotal = 0;
+
+/* ==========================
+   LOAD PRODUCTS
+========================== */
+
+async function loadProducts() {
+
+try {
+
+const { data, error } =
+await supabaseClient
+.from("products")
+.select("*")
+.order("name");
+
+if(error){
+console.error(error);
+alert(error.message);
+return;
+}
+
+products = data || [];
+
+const select =
+document.getElementById("productSelect");
+
+if(!select) return;
+
+select.innerHTML =
+`<option value="">Select Product</option>`;
+
+products.forEach(product => {
+
+select.innerHTML += `
+<option value="${product.id}">
+${product.name} (Stock: ${product.stock})
+</option>
+`;
+
+});
+
+console.log("Products Loaded:", products);
+
+}catch(error){
+
+console.error(error);
+
+}
+
+}
+
+loadProducts();
+
+/* ==========================
+   ADD TO CART
+========================== */
+
+function addToCart(){
+
+const productId =
+Number(
+document.getElementById("productSelect").value
+);
+
+const qty =
+Number(
+document.getElementById("qty").value
+);
+
+if(!productId){
+
+alert("Select Product");
+return;
+
+}
+
+if(qty <= 0){
+
+alert("Enter Valid Quantity");
+return;
+
+}
+
+const product =
+products.find(
+p => Number(p.id) === Number(productId)
+);
+
+if(!product){
+
+alert("Product Not Found");
+return;
+
+}
+
+if(qty > product.stock){
+
+alert("Not Enough Stock");
+return;
+
+}
+
+const itemTotal =
+qty * Number(product.price);
+
+cart.push({
+
+productId: product.id,
+name: product.name,
+qty: qty,
+price: Number(product.price),
+total: itemTotal
+
+});
+
+renderCart();
+
+}
+
+/* ==========================
+   RENDER CART
+========================== */
+
+function renderCart(){
+
+const body =
+document.getElementById("cartBody");
+
+if(!body) return;
+
+body.innerHTML = "";
+
+grandTotal = 0;
+
+cart.forEach(item => {
+
+grandTotal += item.total;
+
+body.innerHTML += `
+
+<tr>
+<td>${item.name}</td>
+<td>${item.qty}</td>
+<td>₹${item.price}</td>
+<td>₹${item.total}</td>
+</tr>
+
+`;
+
+});
+
+const totalElement =
+document.getElementById("grandTotal");
+
+if(totalElement){
+
+totalElement.innerText =
+"₹" + grandTotal;
+
+}
+
+}
+
+/* ==========================
+   COMPLETE SALE
+========================== */
+
 async function completeSale(){
+
+try{
 
 if(cart.length === 0){
 
@@ -34,7 +210,9 @@ let customerId;
 
 /* CHECK CUSTOMER */
 
-const { data: existingCustomer } =
+const {
+data: existingCustomer
+} =
 await supabaseClient
 .from("customers")
 .select("*")
@@ -113,12 +291,16 @@ products.find(
 p => Number(p.id) === Number(item.productId)
 );
 
+if(product){
+
 await supabaseClient
 .from("products")
 .update({
 stock: product.stock - item.qty
 })
 .eq("id", item.productId);
+
+}
 
 }
 
@@ -132,8 +314,94 @@ customerPhone
 
 alert("Sale Saved Successfully");
 
+/* RESET */
+
 cart = [];
 
 renderCart();
+
+document.getElementById("customerName").value = "";
+document.getElementById("customerPhone").value = "";
+document.getElementById("customerAddress").value = "";
+
+loadProducts();
+
+}catch(error){
+
+console.error(error);
+alert(error.message);
+
+}
+
+}
+
+/* ==========================
+   PRINT INVOICE
+========================== */
+
+function printInvoice(
+invoiceNo,
+customerName,
+phone
+){
+
+const invoice = `
+
+<h2>Aafiya Fashion Store</h2>
+
+<hr>
+
+<p><b>Invoice #${invoiceNo}</b></p>
+
+<p>Customer: ${customerName}</p>
+
+<p>Phone: ${phone}</p>
+
+<p>Total Amount: ₹${grandTotal}</p>
+
+`;
+
+const win =
+window.open(
+"",
+"",
+"width=700,height=700"
+);
+
+win.document.write(invoice);
+
+win.document.close();
+
+win.print();
+
+}
+
+/* ==========================
+   WHATSAPP
+========================== */
+
+function shareWhatsApp(){
+
+const customerPhone =
+document.getElementById("customerPhone").value;
+
+if(!customerPhone){
+
+alert("Enter Customer Phone");
+return;
+
+}
+
+const msg =
+
+`Thank you for shopping at Aafiya Fashion Store.
+
+Bill Amount: ₹${grandTotal}`;
+
+window.open(
+
+`https://wa.me/91${customerPhone}?text=${encodeURIComponent(msg)}`
+
+);
 
 }
