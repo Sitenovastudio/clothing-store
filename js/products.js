@@ -196,17 +196,90 @@ loadProducts();
 
 async function editProduct(id){
 
+const product =
+products.find(
+p => Number(p.id) === Number(id)
+);
+
+if(!product){
+
+alert("Product Not Found");
+return;
+
+}
+
+const newName =
+prompt(
+"Product Name",
+product.name
+);
+
+if(newName === null) return;
+
+const newCategory =
+prompt(
+"Category",
+product.category || ""
+);
+
+if(newCategory === null) return;
+
+const newSize =
+prompt(
+"Size",
+product.size || ""
+);
+
+if(newSize === null) return;
+
+const newColor =
+prompt(
+"Color",
+product.color || ""
+);
+
+if(newColor === null) return;
+
 const newPrice =
-prompt("New Price");
+prompt(
+"Price",
+product.price
+);
 
-if(!newPrice) return;
+if(newPrice === null) return;
 
+const newStock =
+prompt(
+"Stock Quantity",
+product.stock
+);
+
+if(newStock === null) return;
+
+const { error } =
 await supabaseClient
 .from("products")
 .update({
-price:newPrice
+
+name: newName.trim(),
+category: newCategory.trim(),
+size: newSize.trim(),
+color: newColor.trim(),
+price: Number(newPrice),
+stock: Number(newStock)
+
 })
-.eq("id",id);
+.eq("id", id);
+
+if(error){
+
+console.error(error);
+alert(error.message);
+return;
+
+}
+
+alert("Product Updated Successfully");
 
 loadProducts();
 
