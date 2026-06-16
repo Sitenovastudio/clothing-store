@@ -526,12 +526,16 @@ window.open(
    CUSTOMER HISTORY
 ========================== */
 
+/* ==========================
+   CUSTOMER HISTORY
+========================== */
+
 async function loadCustomerHistory(){
 
+try{
+
 const phone =
-document.getElementById(
-"searchPhone"
-).value.trim();
+document.getElementById("searchPhone").value.trim();
 
 if(!phone){
 
@@ -550,12 +554,7 @@ await supabaseClient
 .eq("phone", phone)
 .maybeSingle();
 
-if(customerError){
-
-alert(customerError.message);
-return;
-
-}
+if(customerError) throw customerError;
 
 if(!customer){
 
@@ -573,20 +572,13 @@ await supabaseClient
 .select("*")
 .eq("customer_id", customer.id)
 .order("id", {
-ascending: false
+ascending:false
 });
 
-if(salesError){
-
-alert(salesError.message);
-return;
-
-}
+if(salesError) throw salesError;
 
 const table =
-document.getElementById(
-"historyTable"
-);
+document.getElementById("historyTable");
 
 table.innerHTML = "";
 
@@ -594,9 +586,7 @@ if(!sales || sales.length === 0){
 
 table.innerHTML = `
 <tr>
-<td colspan="3">
-No Purchase History
-</td>
+<td colspan="5">No Purchase History</td>
 </tr>
 `;
 
@@ -604,7 +594,31 @@ return;
 
 }
 
-sales.forEach(sale => {
+for(const sale of sales){
+
+const {
+data: items
+} =
+await supabaseClient
+.from("sale_items")
+.select(`
+quantity,
+products(name)
+`)
+.eq("sale_id", sale.id);
+
+let productList = "";
+
+if(items){
+
+items.forEach(item => {
+
+productList +=
+`${item.products?.name || "Product"} (x${item.quantity})<br>`;
+
+});
+
+}
 
 table.innerHTML += `
 
@@ -612,20 +626,28 @@ table.innerHTML += `
 
 <td>#${sale.id}</td>
 
-<td>
-${new Date(
-sale.created_at
-).toLocaleDateString()}
-</td>
+<td>${customer.name}</td>
 
-<td>
-₹${sale.total_amount}
-</td>
+<td>${productList}</td>
+
+<td>${new Date(
+sale.created_at
+).toLocaleDateString()}</td>
+
+<td>₹${sale.total_amount}</td>
 
 </tr>
 
 `;
 
-});
+}
+
+}
+catch(error){
+
+console.error(error);
+alert(error.message);
+
+}
 
 }
