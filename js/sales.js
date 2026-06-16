@@ -1,18 +1,16 @@
-/* ==========================
-   GLOBAL VARIABLES
-========================== */
+REPLACE ENTIRE sales.js WITH:
 
 let products = [];
 let cart = [];
 let grandTotal = 0;
 
 /* ==========================
-   LOAD PRODUCTS
+LOAD PRODUCTS
 ========================== */
 
-async function loadProducts() {
+async function loadProducts(){
 
-try {
+try{
 
 const { data, error } =
 await supabaseClient
@@ -20,11 +18,7 @@ await supabaseClient
 .select("*")
 .order("name");
 
-if(error){
-console.error(error);
-alert(error.message);
-return;
-}
+if(error) throw error;
 
 products = data || [];
 
@@ -39,14 +33,13 @@ select.innerHTML =
 products.forEach(product => {
 
 select.innerHTML += `
+
 <option value="${product.id}">
 ${product.name} (Stock: ${product.stock})
 </option>
 `;
 
 });
-
-console.log("Products Loaded:", products);
 
 }catch(error){
 
@@ -59,7 +52,7 @@ console.error(error);
 loadProducts();
 
 /* ==========================
-   ADD TO CART
+ADD TO CART
 ========================== */
 
 function addToCart(){
@@ -77,13 +70,6 @@ document.getElementById("qty").value
 if(!productId){
 
 alert("Select Product");
-return;
-
-}
-
-if(qty <= 0){
-
-alert("Enter Valid Quantity");
 return;
 
 }
@@ -107,16 +93,13 @@ return;
 
 }
 
-const itemTotal =
-qty * Number(product.price);
-
 cart.push({
 
 productId: product.id,
 name: product.name,
 qty: qty,
 price: Number(product.price),
-total: itemTotal
+total: qty * Number(product.price)
 
 });
 
@@ -125,7 +108,7 @@ renderCart();
 }
 
 /* ==========================
-   RENDER CART
+RENDER CART
 ========================== */
 
 function renderCart(){
@@ -151,25 +134,19 @@ body.innerHTML += `
 <td>₹${item.price}</td>
 <td>₹${item.total}</td>
 </tr>
-
 `;
 
 });
 
-const totalElement =
-document.getElementById("grandTotal");
-
-if(totalElement){
-
-totalElement.innerText =
+document.getElementById(
+"grandTotal"
+).innerText =
 "₹" + grandTotal;
 
 }
 
-}
-
 /* ==========================
-   COMPLETE SALE
+COMPLETE SALE
 ========================== */
 
 async function completeSale(){
@@ -208,123 +185,6 @@ return;
 
 let customerId;
 
-/* ==========================
-   Customer History
-========================== */
-  async function loadCustomerHistory(){
-
-const phone =
-document.getElementById(
-"searchPhone"
-).value.trim();
-
-if(!phone){
-
-alert("Enter Phone Number");
-return;
-
-}
-
-const {
-data: customer
-} =
-await supabaseClient
-.from("customers")
-.select("*")
-.eq("phone", phone)
-.maybeSingle();
-
-if(!customer){
-
-alert("Customer Not Found");
-return;
-
-}
-
-const {
-data: sales
-} =
-await supabaseClient
-.from("sales")
-.select("*")
-.eq("customer_id", customer.id)
-.order("id", {
-ascending:false
-});
-
-const table =
-document.getElementById(
-"historyTable"
-);
-
-table.innerHTML = "";
-
-if(!sales || sales.length === 0){
-
-table.innerHTML = `
-<tr>
-<td colspan="5">
-No Purchase History
-</td>
-</tr>
-`;
-
-return;
-
-}
-
-for(const sale of sales){
-
-const {
-data: items
-} =
-await supabaseClient
-.from("sale_items")
-.select(`
-quantity,
-products(name)
-`)
-.eq("sale_id", sale.id);
-
-let productList = "";
-
-items.forEach(item => {
-
-productList +=
-`${item.products.name}
-(x${item.quantity})<br>`;
-
-});
-
-table.innerHTML += `
-
-<tr>
-
-<td>#${sale.id}</td>
-
-<td>${customer.name}</td>
-
-<td>${productList}</td>
-
-<td>
-${new Date(
-sale.created_at
-).toLocaleDateString()}
-</td>
-
-<td>
-₹${sale.total_amount}
-</td>
-
-</tr>
-
-`;
-
-}
-
-}
-}
-   
 /* CHECK CUSTOMER */
 
 const {
@@ -356,14 +216,10 @@ address: customerAddress
 .select()
 .single();
 
-if(customerError){
+if(customerError) throw customerError;
 
-alert(customerError.message);
-return;
-
-}
-
-customerId = newCustomer.id;
+customerId =
+newCustomer.id;
 
 }
 
@@ -382,12 +238,7 @@ total_amount: grandTotal
 .select()
 .single();
 
-if(saleError){
-
-alert(saleError.message);
-return;
-
-}
+if(saleError) throw saleError;
 
 /* SAVE ITEMS */
 
@@ -413,7 +264,8 @@ if(product){
 await supabaseClient
 .from("products")
 .update({
-stock: product.stock - item.qty
+stock:
+product.stock - item.qty
 })
 .eq("id", item.productId);
 
@@ -421,7 +273,7 @@ stock: product.stock - item.qty
 
 }
 
-/* PRINT */
+/* PDF / PRINT */
 
 printInvoice(
 sale.id,
@@ -429,17 +281,17 @@ customerName,
 customerPhone
 );
 
-alert("Sale Saved Successfully");
-
-/* RESET */
+alert(
+"Sale Saved Successfully"
+);
 
 cart = [];
 
 renderCart();
 
-document.getElementById("customerName").value = "";
-document.getElementById("customerPhone").value = "";
-document.getElementById("customerAddress").value = "";
+document.getElementById("customerName").value="";
+document.getElementById("customerPhone").value="";
+document.getElementById("customerAddress").value="";
 
 loadProducts();
 
@@ -453,7 +305,7 @@ alert(error.message);
 }
 
 /* ==========================
-   PRINT INVOICE
+INVOICE
 ========================== */
 
 function printInvoice(
@@ -494,7 +346,7 @@ win.print();
 }
 
 /* ==========================
-   WHATSAPP
+WHATSAPP
 ========================== */
 
 function shareWhatsApp(){
@@ -510,24 +362,16 @@ return;
 }
 
 const msg =
-
-`Thank you for shopping at Aafiya Fashion Store.
-
-Bill Amount: ₹${grandTotal}`;
+`Thank you for shopping at Aafiya Fashion Store. Bill Amount: ₹${grandTotal}`;
 
 window.open(
-
 `https://wa.me/91${customerPhone}?text=${encodeURIComponent(msg)}`
-
 );
 
 }
-/* ==========================
-   CUSTOMER HISTORY
-========================== */
 
 /* ==========================
-   CUSTOMER HISTORY
+CUSTOMER HISTORY
 ========================== */
 
 async function loadCustomerHistory(){
@@ -545,16 +389,13 @@ return;
 }
 
 const {
-data: customer,
-error: customerError
+data: customer
 } =
 await supabaseClient
 .from("customers")
 .select("*")
 .eq("phone", phone)
 .maybeSingle();
-
-if(customerError) throw customerError;
 
 if(!customer){
 
@@ -564,8 +405,7 @@ return;
 }
 
 const {
-data: sales,
-error: salesError
+data: sales
 } =
 await supabaseClient
 .from("sales")
@@ -575,8 +415,6 @@ await supabaseClient
 ascending:false
 });
 
-if(salesError) throw salesError;
-
 const table =
 document.getElementById("historyTable");
 
@@ -584,11 +422,8 @@ table.innerHTML = "";
 
 if(!sales || sales.length === 0){
 
-table.innerHTML = `
-<tr>
-<td colspan="5">No Purchase History</td>
-</tr>
-`;
+table.innerHTML =
+`<tr><td colspan="5">No Purchase History</td></tr>`;
 
 return;
 
@@ -601,10 +436,8 @@ data: items
 } =
 await supabaseClient
 .from("sale_items")
-.select(`
-quantity,
-products(name)
-`)
+.select(`quantity,
+products(name)`)
 .eq("sale_id", sale.id);
 
 let productList = "";
@@ -623,27 +456,18 @@ productList +=
 table.innerHTML += `
 
 <tr>
-
 <td>#${sale.id}</td>
-
 <td>${customer.name}</td>
-
 <td>${productList}</td>
-
-<td>${new Date(
-sale.created_at
-).toLocaleDateString()}</td>
-
+<td>${new Date(sale.created_at).toLocaleDateString()}</td>
 <td>₹${sale.total_amount}</td>
-
 </tr>
 
 `;
 
 }
 
-}
-catch(error){
+}catch(error){
 
 console.error(error);
 alert(error.message);
