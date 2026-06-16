@@ -480,3 +480,110 @@ window.open(
 );
 
 }
+/* ==========================
+   CUSTOMER HISTORY
+========================== */
+
+async function loadCustomerHistory(){
+
+const phone =
+document.getElementById(
+"searchPhone"
+).value.trim();
+
+if(!phone){
+
+alert("Enter Phone Number");
+return;
+
+}
+
+const {
+data: customer,
+error: customerError
+} =
+await supabaseClient
+.from("customers")
+.select("*")
+.eq("phone", phone)
+.maybeSingle();
+
+if(customerError){
+
+alert(customerError.message);
+return;
+
+}
+
+if(!customer){
+
+alert("Customer Not Found");
+return;
+
+}
+
+const {
+data: sales,
+error: salesError
+} =
+await supabaseClient
+.from("sales")
+.select("*")
+.eq("customer_id", customer.id)
+.order("id", {
+ascending: false
+});
+
+if(salesError){
+
+alert(salesError.message);
+return;
+
+}
+
+const table =
+document.getElementById(
+"historyTable"
+);
+
+table.innerHTML = "";
+
+if(!sales || sales.length === 0){
+
+table.innerHTML = `
+<tr>
+<td colspan="3">
+No Purchase History
+</td>
+</tr>
+`;
+
+return;
+
+}
+
+sales.forEach(sale => {
+
+table.innerHTML += `
+
+<tr>
+
+<td>#${sale.id}</td>
+
+<td>
+${new Date(
+sale.created_at
+).toLocaleDateString()}
+</td>
+
+<td>
+₹${sale.total_amount}
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
