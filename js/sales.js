@@ -1,5 +1,3 @@
-REPLACE ENTIRE sales.js WITH:
-
 let products = [];
 let cart = [];
 let grandTotal = 0;
