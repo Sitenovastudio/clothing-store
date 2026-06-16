@@ -208,6 +208,81 @@ return;
 
 let customerId;
 
+
+   async function loadCustomerHistory(){
+
+const phone =
+document.getElementById(
+"searchPhone"
+).value.trim();
+
+if(!phone){
+
+alert("Enter Phone Number");
+return;
+
+}
+
+const {
+data: customer
+} =
+await supabaseClient
+.from("customers")
+.select("*")
+.eq("phone", phone)
+.maybeSingle();
+
+if(!customer){
+
+alert("Customer Not Found");
+return;
+
+}
+
+const {
+data: sales
+} =
+await supabaseClient
+.from("sales")
+.select("*")
+.eq("customer_id", customer.id)
+.order("id", {
+ascending:false
+});
+
+const table =
+document.getElementById(
+"historyTable"
+);
+
+table.innerHTML = "";
+
+sales.forEach(sale => {
+
+table.innerHTML += `
+
+<tr>
+
+<td>#${sale.id}</td>
+
+<td>
+${new Date(
+sale.created_at
+).toLocaleDateString()}
+</td>
+
+<td>
+₹${sale.total_amount}
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+   
 /* CHECK CUSTOMER */
 
 const {
