@@ -207,12 +207,57 @@ WhatsApp Invoice
 
 </div>
 
+<br>
+
+<!-- Customer History -->
+
+<div class="panel">
+
+<h3>Customer Purchase History</h3>
+
+<input
+type="text"
+id="searchPhone"
+placeholder="Enter Customer Phone">
+
+<button
+onclick="loadCustomerHistory()"
+class="btn btn-primary">
+
+Search
+
+</button>
+
+<br><br>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Invoice</th>
+<th>Date</th>
+<th>Total</th>
+</tr>
+
+</thead>
+
+<tbody id="historyTable">
+
+</tbody>
+
+</table>
+
+</div>
+
 </div>
 
 </div>
 
 <!-- Scripts -->
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="js/supabase.js"></script>
